@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: @PROJECT_NAME@
+Description: @PROJECT_NAME@
+Version: @PDF2HTMLEX_VERSION@
+
+Requires.private: cairo-svg freetype libfontforge poppler
+Libs: -L${libdir} -lpdf2htmlEX
+Cflags: -I${includedir}

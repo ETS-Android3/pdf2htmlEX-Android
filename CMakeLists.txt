@@ -95,7 +95,6 @@ configure_file (${CMAKE_SOURCE_DIR}/share/pdf2htmlEX.js.in ${CMAKE_SOURCE_DIR}/s
 
 set(PDF2HTMLEX_SRC ${PDF2HTMLEX_SRC}
     src/Param.h
-    src/pdf2htmlEX.cc
     src/pdf2htmlEX-config.h
     src/HTMLRenderer/HTMLRenderer.h
     src/HTMLRenderer/draw.cc
@@ -154,7 +153,14 @@ set(PDF2HTMLEX_SRC ${PDF2HTMLEX_SRC}
     src/TmpFiles.cc
     )
 
-add_executable(pdf2htmlEX ${PDF2HTMLEX_SRC})
+set(PDF2HTMLEX_PROGRAM_SRC src/pdf2htmlEX.cc ${PDF2HTMLEX_SRC})
+set(libPDF2HTMLEX_SRC src/libpdf2htmlEX.cc ${PDF2HTMLEX_SRC} src/pdf2htmlEX.h)
+#@TODO: check which library to build: ${BUILD_SHARED_LIBS}
+add_library(libpdf2htmlEX ${libPDF2HTMLEX_SRC})
+set_target_properties(libpdf2htmlEX PROPERTIES PUBLIC_HEADER "src/pdf2htmlEX.h")
+set_target_properties(libpdf2htmlEX PROPERTIES OUTPUT_NAME pdf2htmlEX)
+
+add_executable(pdf2htmlEX ${PDF2HTMLEX_PROGRAM_SRC})
 target_link_libraries(pdf2htmlEX ${PDF2HTMLEX_LIBS})
 
 add_custom_target(pdf2htmlEX_resources ALL DEPENDS
@@ -181,6 +187,15 @@ add_custom_command(OUTPUT
     )
 
 install (TARGETS pdf2htmlEX DESTINATION bin)
+install (TARGETS libpdf2htmlEX
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  PUBLIC_HEADER DESTINATION include
+  )
+
+#@TODO: pass library list to .pc, don't hardcode. We might not need cairo-svg
+configure_file(${CMAKE_CURRENT_LIST_DIR}/pdf2htmlEX.pc.in ${CMAKE_CURRENT_BINARY_DIR}/pdf2htmlEX.pc @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pdf2htmlEX.pc DESTINATION lib/pkgconfig)
 
 set(PDF2HTMLEX_RESOURCE
     ${CMAKE_SOURCE_DIR}/3rdparty/PDF.js/compatibility.js
