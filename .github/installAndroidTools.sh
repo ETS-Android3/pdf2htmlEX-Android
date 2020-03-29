@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+env
+
+ls -lhaR $ANDROID_HOME/tools
+
 if test ! -d $ANDROID_HOME/tools/bin/sdkmanager
 then
   if test ! -f android-sdk/android-sdk.zip
